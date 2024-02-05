@@ -1,9 +1,10 @@
 import express, { Response, Request } from "express"
 import multer from "multer"
 import cloudinary from "cloudinary"
-import Hotel, { HotelType } from "../models/hotel"
+import Hotel from "../models/hotel"
 import verifyToken from "../middleware/auth"
 import { body } from "express-validator"
+import { HotelType } from "../shared/types"
 
 const router = express.Router()
 const storage = multer.memoryStorage()
@@ -58,4 +59,15 @@ upload.array("imageFiles", 6), async(req:Request, res: Response) => {
     }
 })
 
+
+router.get("/", verifyToken, async (req:Request, res: Response)=>{
+    
+    try{
+        const hotels = await Hotel.find({userId: req.userId})
+        res.json(hotels);
+
+    } catch(error) {
+        res.status(500).json({message: "something went wrong"})
+    }
+})
 export default router
